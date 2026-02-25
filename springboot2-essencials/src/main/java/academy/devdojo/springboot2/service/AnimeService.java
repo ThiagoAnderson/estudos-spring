@@ -20,7 +20,11 @@ public class AnimeService {
 
     private final AnimeRepository animeRepository;
     private final AnimeMapper animeMapper;
-    public List<Anime> listAll() {
+    public Page<Anime> listAll(Pageable pageable) {
+        return animeRepository.findAll(pageable);
+    }
+
+    public List<Anime> listAllNoPageable() {
         return animeRepository.findAll();
     }
 
@@ -47,7 +51,6 @@ public class AnimeService {
         animeRepository.save(anime);
     }
 
-    public Page<Anime> listAll(Pageable pageable) {
-        return animeRepository.findAll(pageable);
-    }
+
+
 }
