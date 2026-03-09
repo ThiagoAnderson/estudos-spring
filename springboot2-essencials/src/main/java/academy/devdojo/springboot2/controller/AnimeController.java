@@ -13,6 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -40,6 +44,12 @@ public class AnimeController {
     public ResponseEntity<Anime> findById(@PathVariable long id){
         return ResponseEntity.ok(animeservice.findByIdOrThrowBadRequestException(id));
     }
+    @GetMapping(path = "by-id/{id}")
+    public ResponseEntity<Anime> findByIdAuThenticationPrincipal(@PathVariable long id,
+                                                                 @AuthenticationPrincipal UserDetails userDetails){
+        log.info(userDetails);
+        return ResponseEntity.ok(animeservice.findByIdOrThrowBadRequestException(id));
+    }
     @GetMapping(path = "/find")
     public ResponseEntity<List<Anime>> findByName(@RequestParam String name){
         return ResponseEntity.ok(animeservice.findByNome(name));
@@ -50,7 +60,7 @@ public class AnimeController {
         return new ResponseEntity<>(animeservice.save(animePostRequestBody), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/admin/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id){
         animeservice.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

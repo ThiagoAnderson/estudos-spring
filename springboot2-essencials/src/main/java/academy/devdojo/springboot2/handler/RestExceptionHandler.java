@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +47,17 @@ public class RestExceptionHandler {
                         .fields(fields)
                         .fieldsMessage(fieldsMessage)
                         .developerMessage(exception.getClass().getName()).build(),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(AccessDeniedException ex){
+        ProblemDetail problemDetail = ProblemDetail
+                .forStatus(HttpStatus.FORBIDDEN);
+
+        problemDetail.setTitle("Access Denied");
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setProperty("DeveloperMessage", ex.getClass().getName());
+        return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
